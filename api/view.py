@@ -60,10 +60,7 @@ def isLightOrDark(rgbColor=[0, 128, 255], threshold=127.5):
     # https://stackoverflow.com/a/58270890
     [r, g, b] = rgbColor
     hsp = math.sqrt(0.299 * (r * r) + 0.587 * (g * g) + 0.114 * (b * b))
-    if hsp > threshold:
-        return "light"
-    else:
-        return "dark"
+    return "light" if hsp > threshold else "dark"
 
 
 # @functools.lru_cache(maxsize=128)
@@ -82,10 +79,7 @@ def make_svg(
     num_bar = 75
 
     if theme == "compact":
-        if cover_image:
-            height = 400
-        else:
-            height = 100
+        height = 400 if cover_image else 100
     elif theme == "natemoo-re":
         height = 84
         num_bar = 100
@@ -93,14 +87,10 @@ def make_svg(
         height = 100
         num_bar = 100
     else:
-        if cover_image:
-            height = 445
-        else:
-            height = 145
-
+        height = 445 if cover_image else 145
     if is_now_playing:
         title_text = "Now playing"
-        content_bar = "".join(["<div class='bar'></div>" for i in range(num_bar)])
+        content_bar = "".join(["<div class='bar'></div>" for _ in range(num_bar)])
         css_bar = generate_css_bar(num_bar)
     elif show_offline:
         title_text = "Not playing"
@@ -188,9 +178,7 @@ def get_access_token(uid):
 def get_song_info(uid, show_offline):
     access_token = get_access_token(uid)
 
-    data = spotify.get_now_playing(access_token)
-
-    if data:
+    if data := spotify.get_now_playing(access_token):
         item = data["item"]
         item["currently_playing_type"] = data["currently_playing_type"]
         is_now_playing = True
@@ -260,10 +248,7 @@ def catch_all(path):
     # Extract cover image color
     if is_bar_color_from_cover and img:
 
-        is_skip_dark = False
-        if theme in ["default"]:
-            is_skip_dark = True
-
+        is_skip_dark = theme in ["default"]
         pil_img = Image.open(io.BytesIO(img))
         colors = colorgram.extract(pil_img, 5)
 

@@ -13,7 +13,7 @@ SPOTIFY_CLIENT_ID = os.getenv("SPOTIFY_CLIENT_ID")
 SPOTIFY_SECRET_ID = os.getenv("SPOTIFY_SECRET_ID")
 BASE_URL = os.getenv("BASE_URL")
 
-REDIRECT_URI = "{}/callback".format(BASE_URL)
+REDIRECT_URI = f"{BASE_URL}/callback"
 
 # scope user-read-currently-playing,user-read-recently-played
 SPOTIFY_URL_REFRESH_TOKEN = "https://accounts.spotify.com/api/token"
@@ -39,12 +39,10 @@ def generate_token(authorization_code):
         "code": authorization_code,
     }
 
-    headers = {"Authorization": "Basic {}".format(get_authorization())}
+    headers = {"Authorization": f"Basic {get_authorization()}"}
 
     response = requests.post(SPOTIFY_URL_GENERATE_TOKEN, data=data, headers=headers)
-    repsonse_json = response.json()
-
-    return repsonse_json
+    return response.json()
 
 
 def refresh_token(refresh_token):
@@ -54,22 +52,18 @@ def refresh_token(refresh_token):
         "refresh_token": refresh_token,
     }
 
-    headers = {"Authorization": "Basic {}".format(get_authorization())}
+    headers = {"Authorization": f"Basic {get_authorization()}"}
 
     response = requests.post(SPOTIFY_URL_REFRESH_TOKEN, data=data, headers=headers)
-    repsonse_json = response.json()
-
-    return repsonse_json
+    return response.json()
 
 
 def get_user_profile(access_token):
 
-    headers = {"Authorization": "Bearer {}".format(access_token)}
+    headers = {"Authorization": f"Bearer {access_token}"}
 
     response = requests.get(SPOTIFY_URL_USER_INFO, headers=headers)
-    repsonse_json = response.json()
-
-    return repsonse_json
+    return response.json()
 
 
 def get_recently_play(access_token):
@@ -78,11 +72,7 @@ def get_recently_play(access_token):
 
     response = requests.get(SPOTIFY_URL_RECENTLY_PLAY, headers=headers)
 
-    if response.status_code == 204:
-        return {}
-
-    repsonse_json = response.json()
-    return repsonse_json
+    return {} if response.status_code == 204 else response.json()
 
 
 def get_now_playing(access_token):
@@ -91,9 +81,5 @@ def get_now_playing(access_token):
 
     response = requests.get(SPOTIFY_URL_NOW_PLAYING, headers=headers)
 
-    if response.status_code == 204:
-        return {}
-
-    repsonse_json = response.json()
-    return repsonse_json
+    return {} if response.status_code == 204 else response.json()
 
